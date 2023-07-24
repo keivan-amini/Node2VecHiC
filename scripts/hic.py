@@ -2,6 +2,7 @@ import networkx as nx
 import pandas as pd
 import matplotlib.pyplot as plt
 from node2vec import Node2Vec
+from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 #openpyxl needed
 
@@ -75,14 +76,17 @@ class Algorithms:
        self.model.wv.most_similar('2')  # Output node names are always strings
        self.model.wv.save_word2vec_format(self.embedding_path)
        self.get_df()
+       self.normalize_features()
 
     def get_df(self):
         self.df = pd.read_csv(self.embedding_path, header = 0,
                               names = self.old_dimensions, sep= ' ')
-
+        
+    def normalize_features(self):
+        self.x = self.df.loc[:, self.old_dimensions].values
+        self.x = StandardScaler().fit_transform(self.x)
 
     def pca(self):
-        self.x = self.df.loc[:, self.old_dimensions].values
         self.pca = PCA(n_components = self.number_components)
         principalComponents = self.pca.fit_transform(self.x)
         self.principal_df = pd.DataFrame(data = principalComponents,
@@ -91,7 +95,7 @@ class Algorithms:
 
 
 
-def get_plot(features1, features2): #non mi piace il fatto che features1 deve essere per forza cancro
+def get_plot(features1, features2): #non mi piace il fatto che features1 debba essere per forza cancro
     plt.rc('axes', axisbelow=True)
     plt.grid()
     x1, y1 = features1[:,0], features1[:,1]

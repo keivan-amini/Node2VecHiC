@@ -1,6 +1,7 @@
 import numpy as np
 from hic import HiC, Algorithms, get_plot
 
+
 cancer_path = '..\data\cancer_hic.csv' 
 healthy_path = '..\data\healthy_hic.csv'
 metadata_path = '..\data\metadata_hic.xlsx' 
@@ -13,8 +14,8 @@ healthy_hic = HiC(healthy_path, metadata_path)
 algorithms_cancer = Algorithms(cancer_hic)
 algorithms_healthy = Algorithms(healthy_hic)
 
-algorithms_cancer.node2vec()
-algorithms_healthy.node2vec()
+algorithms_cancer.get_df()
+algorithms_healthy.get_df()
 
 algorithms_cancer.pca()
 algorithms_healthy.pca()
