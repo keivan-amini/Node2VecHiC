@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from node2vec import Node2Vec
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
+from matplotlib.colors import ListedColormap
+
 #openpyxl needed
 
 class HiC:
@@ -38,6 +40,7 @@ class HiC:
             list += ([self.metadata_df.chr[i]] * (self.metadata_df.end[i] - self.metadata_df.start[i]+1))
         dict = {index: value for index, value in enumerate(list)}
         nx.set_node_attributes(self.G, dict, 'chromosome')
+        self.attributes = nx.get_node_attributes(self.G, 'chromosome')
         
     def draw_network(self):
         nx.draw(self.G, arrows = True)
@@ -52,6 +55,7 @@ class Algorithms:
         self.hi_c = hi_c
         self.G = hi_c.G
         self.name = hi_c.name
+        self.attributes = hi_c.attributes
 
 
         # Node2Vec parameters
@@ -109,4 +113,63 @@ def get_plot(features1, features2): #non mi piace il fatto che features1 debba e
     plt.savefig('..\plot\pca.png') #cambiare nome
     plt.show()
 
+def get_plot_chromosome(features, attribute, type):
 
+    fig, ax = plt.subplots() 
+    ax.set_axisbelow(True)
+    ax.grid()
+
+    chromosomes = list(set((attribute.values())))
+    color_list = ['tab:blue','tab:green', 'tab:red', 'tab:orange', 'tab:pink']
+    color_dict = {chr: color for chr, color in zip(chromosomes, color_list)}
+    color_dict = dict(sorted(color_dict.items()))
+    attribute = dict(sorted(attribute.items())) #order by number items
+
+    x1, y1 = features[:,0], features[:,1]
+    for index, value in attribute.items():
+        if index < len(attribute.items()):
+            ax.scatter(x1[index], y1[index], c = color_dict[value], s = 7, label = str(value))
+    ax.set_xlabel("First principal component")
+    ax.set_ylabel("Second principal component")
+    ax.legend()
+    ax.set_title(str(type))
+    legend_without_duplicate_labels(ax)
+
+    fig.savefig('..\plot\pca_chromosome_' + str(type) + '.png') #cambiare nome
+    plt.show()
+    
+#avere il grafico a destra e avere una sola legenda
+
+
+def legend_without_duplicate_labels(ax):
+    handles, labels = ax.get_legend_handles_labels()
+    unique = [(h, l) for i, (h, l) in enumerate(zip(handles, labels)) if l not in labels[:i]]
+    ax.legend(*zip(*unique))
+
+#mo: grafico con con entrambi cancri e sane, ma sane cerchio e cancri quadratino dolce
+
+def get_plot_chromosome_comparison(features1, features2, attribute):
+
+    fig, ax = plt.subplots() 
+    ax.set_axisbelow(True)
+    ax.grid()
+
+    x1, y1 = features1[:,0], features1[:,1]
+    x2, y2 = features2[:,0], features2[:,1]
+
+    chromosomes = list(set((attribute.values())))
+    color_list = ['tab:blue','tab:green', 'tab:red', 'tab:orange', 'tab:pink']
+    color_dict = {chr: color for chr, color in zip(chromosomes, color_list)}
+    color_dict = dict(sorted(color_dict.items()))
+    attribute = dict(sorted(attribute.items())) #order by number items
+    for index, value in attribute.items():
+        if index < len(attribute.items()):
+            ax.scatter(x1[index], y1[index], marker = 'x', c = color_dict[value], s = 7, label = str(value)) #for the tumor
+            ax.scatter(x2[index], y2[index], marker = 'v', c = color_dict[value], s = 7) #for the healthy
+    ax.set_xlabel("First principal component")
+    ax.set_ylabel("Second principal component")
+    ax.legend() #aggiungere un ulteriore legenda con la distinzione tra tumore e cellula sana
+    ax.set_title('Chromosome comparison for healthy and tumor cell with PCA and Node2Vec')
+    legend_without_duplicate_labels(ax)
+    fig.savefig('..\plot\pca_chromosome_comparison.png') #cambiare nome
+    plt.show()
