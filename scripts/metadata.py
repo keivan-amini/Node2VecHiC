@@ -67,6 +67,9 @@ class Metadata:
         attributes (dict):
             dict that associate each node index of the network
             to the name of the chromosome.
+        nodes (np.ndarray):
+            numpy array containing the index of the involved nodes
+            in the metadata file.
     """
 
     def __init__(self, path):
@@ -84,7 +87,7 @@ class Metadata:
         self.data_frame = self.get_df()
         self.chromosomes = np.arange(len(self.data_frame))
         self.start, self.end = self.get_index_chromosomes()
-        self.attributes = self.get_dict_chromosomes()
+        self.nodes = np.arange(self.end[-1])
 
     def get_df(self) -> None:
         """
@@ -148,7 +151,8 @@ class Metadata:
         Return
         ------
             dict_chromosomes (dict):
-                dict containing 
+                dict containing index of each node in the network
+                as key, and name of chromosome as value.
         """
         list_chromosomes = []
         for index in self.chromosomes:
