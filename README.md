@@ -2,7 +2,7 @@
 ## Introduction
 In the realm of genomics, unraveling the intricacies of chromosome translocations holds paramount importance, particularly in the context of understanding genetic diseases, such as cancer. This repository introduces a simple and intuitive framework that combines graph theory and machine learning to detect translocation, given an Hi-C input data.
 
-This repository is not designed as a genomic data analysis library. Instead, it relies on the [Node2Vec](https://github.com/eliorc/node2vec) and [scikit-learn[(https://scikit-learn.org/stable/) libraries, saving you time on the data engineering part. Think of it as a tool tailored for visualizing genomic translocations when you have both a metadata file and Hi-C data at your disposal. (see [requirements](https://github.com/keivan-amini/Node2Vec-Hi-C#Requirements)!)
+This repository is not designed as a genomic data analysis library. Instead, it relies on the [Node2Vec](https://github.com/eliorc/node2vec) and [scikit-learn](https://scikit-learn.org/stable/) libraries, saving you time on the data engineering part. Think of it as a tool tailored for visualizing genomic translocations when you have both a metadata file and Hi-C data at your disposal.
 
 The repository is composed by different folders:
 * [data](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/data) contains Hi-C data and Metadata file.
@@ -38,12 +38,20 @@ The repository is composed by different folders:
 See the [requirements.txt](https://github.com/keivan-amini/Node2Vec-Hi-C/blob/main/requirements.txt) file.
 
 ## Installation
-TODO
+Open a terminal or command prompt. Navigate to your preferred directory where you want to clone the repository and run:
+```
+git clone https://github.com/keivan-amini/Node2Vec-Hi-C
+```
+Move to the cloned directory and install the required libraries:
+```
+cd Node2Vec-Hi-C
+python3 -m pip install -r requirements.txt
+```
 ## Tutorials
 TODO
 ## Tests
 TODO
 ## Plot examples
 TODO
-## References
-TODO
+## References and thanks
+This repository contains the project for the course of Complex Networks, part of the MSc in Applied Physics at the University of Bologna. All the references for the project are contained in the  `.pdf ` document. Special thanks to [Daniel Remondini](https://www.unibo.it/sitoweb/daniel.remondini) and [Alessandra Merlotti](https://www.unibo.it/sitoweb/alessandra.merlotti2)!
