@@ -47,6 +47,8 @@ Move to the cloned directory and install the required libraries:
 cd Node2Vec-Hi-C
 python3 -m pip install -r requirements.txt
 ```
+## Repository structures
+TODO
 ## Tutorials
 TODO
 ## Tests
