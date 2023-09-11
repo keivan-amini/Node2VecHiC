@@ -80,7 +80,6 @@ def run_node2vec(graph: nx.Graph,
     """
     n_dimensions, walk_length, num_walks, weight_key, workers, \
     p, q = parameters
-    dimensions = np.arange(n_dimensions)
     node2vec = Node2Vec(graph = graph,
                         dimensions = n_dimensions,
                         walk_length = walk_length,
@@ -91,7 +90,7 @@ def run_node2vec(graph: nx.Graph,
                         q = q)
     model = fit_model(node2vec)
     model.wv.save_word2vec_format(embeddings_path)
-    data_frame, indexes = get_embeddings(dimensions, embeddings_path)
+    data_frame, indexes = get_embeddings(n_dimensions, embeddings_path)
     return data_frame, indexes
 
 def fit_model(node2vec: object,
@@ -166,8 +165,8 @@ def get_embeddings(n_dimensions: int,
 def run_pca(data_frame: pd.DataFrame,
             n_components: int) -> np.ndarray:
     """
-    Run PCA algorithm on a input dataframe, with the desired
-    number of prinicpal components.
+    Normalize features on a input dataframe and run PCA algorithm
+    with the desired number of prinicpal components.
 
     Parameters
     ----------
@@ -191,8 +190,8 @@ def run_pca(data_frame: pd.DataFrame,
     principal_df = pd.DataFrame(data = principal_components,
                                 columns = dimensions,
                                 index = indexes) # indexes is necessary if we remove empy axes!
-    components = principal_df.loc[:, dimensions].values
-    return components
+    #components = principal_df.loc[:, dimensions].values
+    return principal_df #TODO change docstrings since we now just return principal_df
 
 
 def normalize_features(data_frame: pd.DataFrame) -> np.ndarray:
