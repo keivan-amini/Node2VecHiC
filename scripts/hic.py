@@ -25,11 +25,11 @@ class HiC:
 
     The class takes in input two parameters: a metadata object,
     that can be defined with using the Metadata() class contained
-    in the metadata.py script, and the path string related to the
+    in the metadata.py module, and the path string related to the
     stored adjacency matrix.
     
 
-    Methods TODO 
+    Methods 
     -------
         get_df()
             transform .csv adjacency matrix
@@ -38,13 +38,14 @@ class HiC:
             return a list containing dataframes for all possible
             pair of chromosomes with the input selected_chromosome.
         get_attributes()
-            get the attributes of the adjacency matrix structure.
+            get the attributes of the Hi-C network related to the
+            adjacency matrix.
         get_block_graph()
             return a list containing graphs related to the block_df
             list. #TODO maybe change
 
 
-    Attributes TODO
+    Attributes
     ----------
         metadata (object):
             instance of the class Metadata().
@@ -59,7 +60,7 @@ class HiC:
             in .csv extension.
         name (string):
             name of the instance Hi-C class, extracted from
-            the attribute path. TODO call it as the instance name!
+            the attribute path.
         data_frame (pd.DataFrame):
             dataframe containing the main adjacency matrix.
         attributes (dict):
@@ -90,7 +91,9 @@ class HiC:
         self.path = matrix_path
         self.name = self.path.replace('..\\data\\', '').replace('.csv', '')
         self.data_frame = self.get_df()
-        self.attributes = self.get_attributes()
+        self.graph, self.attributes = self.get_graph_attributes()
+
+        self.selected_chromosome = 4 #chr20
 
 
     def get_df(self) -> pd.DataFrame:
@@ -105,7 +108,7 @@ class HiC:
                 empty axis removed.
         """
         data_frame = pd.read_csv(self.path, header = None)
-        data_frame = remove_empty_axis(data_frame)
+        data_frame = remove_empty_axis(data_frame) #TODO: does it has sense to remove empty axes?
         return data_frame
 
     def get_block_df(self,
@@ -139,32 +142,34 @@ class HiC:
                 nodes_to_keep = np.append(nodes_to_keep, selected_chromosome_nodes)
                 nodes_to_drop = get_complementary_list(nodes_to_keep, self.nodes)
                 block_df = self.data_frame.drop(index = nodes_to_drop,
-                                        columns = nodes_to_drop,
-                                        errors = 'ignore')
+                                                columns = nodes_to_drop,
+                                                errors = 'ignore')
                 block_dfs.append(block_df)
         return block_dfs
 
-    def get_attributes(self) -> dict:
+    def get_graph_attributes(self) -> (nx.Graph, dict):
         """
-        Get the attributes of the Hi-C matrix using networkX
-        library, starting from the matrix data_frame.
-        Note that dict_chromosomes and self.attributes are two
-        different dictionaries because the matrix dataframe is
-        in part incomplete. (to check) TODO
+        Get the graph and the attributes of the Hi-C data using
+        networkX library.
 
         Return
         ------
+            graph (nx.Graph):
+                graph structure related to the adjacency matrix
+                contained in the attribute data_frame.
             attributes (dict):
                 dictionary of attributes keyed by node related
                 to the network structure of the adjacency matrix.
+            
         """
         graph = nx.from_pandas_adjacency(self.data_frame)
         dict_chromosomes = self.metadata.get_dict_chromosomes()
         nx.set_node_attributes(graph, dict_chromosomes, 'chromosome')
-        attributes = nx.get_node_attributes(graph, 'chromosome') #self.attributes is shorter! 749 nodes VS dict_chromosomes with 778.
-        return attributes
+        attributes = nx.get_node_attributes(graph, 'chromosome')
+        attributes = dict(sorted(attributes.items())) # order by items
+        return graph, attributes
 
-    def get_block_graph(self) -> list: #TODO is it useful? #da capire se dargli in input una lista di blocchi a caso. (block_df instead of self.block_df)
+    def get_block_graph(self) -> list:
         """
         Get a list containing the graphs associated with the
         block data frames, for each couple of chromosomes in
@@ -176,13 +181,12 @@ class HiC:
                 list containing graphs structure related to the
 
         """
-        block_dfs = self.get_block_df() # non ha senso questa linea
+        block_dfs = self.get_block_df(selected_chromosome = self.selected_chromosome) # non ha senso questa linea
         graphs_list = []
 
         for block_df in block_dfs:
             block_graph = nx.from_pandas_adjacency(block_df)
-            graphs_list.append(block_graph) # i think we do not need block attribute!
-        
+            graphs_list.append(block_graph)
         return graphs_list
 
 def get_complementary_list(main_list: list,

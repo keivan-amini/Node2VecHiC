@@ -89,7 +89,7 @@ class Metadata:
         self.start, self.end = self.get_index_chromosomes()
         self.nodes = np.arange(self.end[-1])
 
-    def get_df(self) -> None:
+    def get_df(self) -> (pd.DataFrame):
         """
         Get the dataframe containing the metadata.
 
@@ -98,13 +98,10 @@ class Metadata:
             data_frame (pd.DataFrame):
                 dataframe of the metadata file.
         """
-        if self.path.endswith(('xlsx',  'xls')):
+        if self.path.endswith(('xlsx')):
             data_frame = pd.DataFrame(pd.read_excel(self.path))
         elif self.path.endswith('csv'):
             data_frame = pd.read_csv(self.path)
-        else:
-            raise ValueError(
-                "Unsupported file format. Only Excel (xlsx, xls) and csv files are supported.")
         return data_frame
 
     def get_index_chromosomes(self) -> (list, list):
@@ -143,7 +140,8 @@ class Metadata:
                 index nodes associated with the input
                 chromosome.
         """
-        nodes = np.arange(self.start[chromosome], self.end[chromosome])
+        nodes = np.arange(self.start[chromosome],
+                          self.end[chromosome] + 1)
         return nodes
 
     def get_dict_chromosomes(self) -> dict:
