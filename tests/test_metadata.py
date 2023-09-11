@@ -1,17 +1,13 @@
 """
-TODO: This file must change position. At the moment, it's in scripts folder.
-In the future should be moved in the tests folder.
-To run tests with coverage go in the scripts folder and execute:
-    python3.9 -m pytest --cov --cov-report term-missing
-
+Tests related to the metadata module.
 """
 
+# Importing libraries
 from hypothesis import given, strategies as st
 import pandas as pd
-
 from Node2VecHiC.metadata import Metadata
 
-
+# Defining instance of the class
 METADATA_PATH = '..\\data\\metadata_hic.xlsx'
 metadata = Metadata(METADATA_PATH)
 
