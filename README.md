@@ -6,7 +6,7 @@ This repository is not designed as a genomic data analysis library. Instead, it 
 
 The repository is composed by different folders:
 * [data](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/data) contains Hi-C data and Metadata file.
-* [scripts](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/scripts) contains all python modules useed in the project.
+* [Node2VecHiC](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/Node2VecHiC) contains all python modules useed in the project.
 * [model](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/model) contains the outputs embeddings from the Node2Vec algorithm.
 * [plot](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/plot) contains the plotted figures.
 * [tutorial](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/tutorial) contains an easy how-to notebook exploiting this repository. TODO
@@ -45,14 +45,22 @@ git clone https://github.com/keivan-amini/Node2Vec-Hi-C
 Move to the cloned directory and install the required libraries:
 ```
 cd Node2Vec-Hi-C
-python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt .
 ```
 ## Repository structure
 TODO
 ## Tutorials
 TODO
 ## Tests
-TODO
+Be careful: `pytest` requires: `Python 3.7+` or `PyPy3`. If not yet installed, open a terminal and execute:
+```
+pip install -U pytest
+```
+Move to the tests directory and run the command:
+```
+cd tests
+python3 -m pytest
+```
 ## Plot examples
 TODO
 ## References and thanks
