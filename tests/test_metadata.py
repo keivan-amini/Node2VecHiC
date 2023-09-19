@@ -2,14 +2,33 @@
 Tests related to the metadata module.
 """
 
-# Importing libraries
 from hypothesis import given, strategies as st
 import pandas as pd
 from Node2VecHiC.metadata import Metadata
 
+
+def generate_metadata() -> str:
+    """
+    Generate a fake metadata file and store it in a .csv
+
+    Return
+    ------
+        path (str):
+            path of the .csv metadata file.
+
+    """
+    metadata = {'chr': ['chr1', 'chr2', 'chr3', 'chr4'],
+                'start': [1, 31, 101, 201,],
+                'end': [30, 100, 200, 299]} 
+    metadata = pd.DataFrame(metadata)
+    path = 'metadata.csv'
+    metadata.to_csv('metadata.csv', index = False)
+    return path
+
 # Defining instance of the class
-METADATA_PATH = '..\\data\\metadata_hic.xlsx'
+METADATA_PATH = generate_metadata()
 metadata = Metadata(METADATA_PATH)
+
 
 
 def test_get_df():
@@ -65,7 +84,7 @@ def test_parameter_get_nodes(chromosome: int):
     and the start columns (fixing a row) in the metadata.
     """
     nodes = metadata.get_nodes(chromosome)
-    assert len(nodes) - 1 == metadata.end[chromosome] - metadata.start[chromosome]
+    assert len(nodes) == metadata.end[chromosome] - metadata.start[chromosome]
 
 def test_dict_chromosomes():
     """
