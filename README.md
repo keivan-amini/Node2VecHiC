@@ -4,6 +4,8 @@ In the realm of genomics, unraveling the intricacies of chromosome translocation
 
 This repository is not designed as a genomic data analysis library. Instead, it relies on the [Node2Vec](https://github.com/eliorc/node2vec) and [scikit-learn](https://scikit-learn.org/stable/) libraries, saving you time on the data engineering part. Think of it as a tool tailored for visualizing (possible) genomic translocations when you have both a metadata file and Hi-C data at your disposal.
 
+## Repository structure
+TODO (add tree)
 The repository is composed by different folders:
 * [data](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/data) contains Hi-C data and Metadata file.
 * [Node2VecHiC](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/Node2VecHiC) contains all python modules useed in the project.
@@ -47,10 +49,10 @@ Move to the cloned directory and install the required libraries:
 cd Node2Vec-Hi-C
 python3 -m pip install -r requirements.txt .
 ```
-## Repository structure
-TODO
+
 ## Tutorials
 TODO
+
 ## Tests
 Be careful: `pytest` requires: `Python 3.7+` or `PyPy3`. If not yet installed, open a terminal and execute:
 ```
@@ -62,6 +64,12 @@ cd tests
 python3 -m pytest
 ```
 ## Plot examples
-TODO
+<p align="center">
+  <img src="https://github.com/keivan-amini/Node2VecHiC/blob/main/plot/pca_chromosome_healthy.png" align="centre"   alt="map"/>
+</p>
+<p align="center">
+  <img src="https://github.com/keivan-amini/Node2VecHiC/blob/main/plot/pca_chromosome_cancer.png" align="centre"   alt="map"/>
+</p>
+
 ## References and thanks
 This repository contains the project for the course of Complex Networks, part of the MSc in Applied Physics at the University of Bologna. All the references for the project are contained in the  `.pdf ` document. Special thanks to [Daniel Remondini](https://www.unibo.it/sitoweb/daniel.remondini) and [Alessandra Merlotti](https://www.unibo.it/sitoweb/alessandra.merlotti2)!
