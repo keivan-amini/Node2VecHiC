@@ -8,10 +8,10 @@ This repository is not designed as a genomic data analysis library. Instead, it 
 TODO (add tree)
 The repository is composed by different folders:
 * [data](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/data) contains Hi-C data and Metadata file.
-* [Node2VecHiC](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/Node2VecHiC) contains all python modules useed in the project.
+* [Node2VecHiC](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/Node2VecHiC) contains all python modules used in the project.
 * [model](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/model) contains the outputs embeddings from the Node2Vec algorithm.
 * [plot](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/plot) contains the plotted figures.
-* [tutorial](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/tutorial) contains an easy how-to notebook exploiting this repository. TODO
+* [tutorial](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/tutorial) contains an easy how-to notebook exploiting some functions of the repository.
 * [tests](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/tests) contains tests for the scripts. TODO
 * [pdf](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/pdf) contains the full project documentation, with mathematical theory, figures and results.
 
@@ -50,8 +50,8 @@ cd Node2Vec-Hi-C
 python3 -m pip install -r requirements.txt .
 ```
 
-## Tutorials
-TODO
+## Tutorial
+Click [here](https://github.com/keivan-amini/Node2VecHiC/blob/main/tutorial/notebook.ipynb) to access a brief tutorial with fake datasets.
 
 ## Tests
 Be careful: `pytest` requires: `Python 3.7+` or `PyPy3`. If not yet installed, open a terminal and execute:
