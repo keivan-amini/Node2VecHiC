@@ -70,6 +70,9 @@ python3 -m pytest
 <p align="center">
   <img src="https://github.com/keivan-amini/Node2VecHiC/blob/main/plot/pca_chromosome_cancer.png" align="centre"   alt="map"/>
 </p>
+<p align="center">
+  <img src="https://github.com/keivan-amini/Node2VecHiC/blob/main/plot/cancer_hic_chr1.png" align="centre"   alt="map"/>
+</p>
 
 ## References and thanks
 This repository contains the project for the course of Complex Networks, part of the MSc in Applied Physics at the University of Bologna. All the references for the project are contained in the  `.pdf ` document. Special thanks to [Daniel Remondini](https://www.unibo.it/sitoweb/daniel.remondini) and [Alessandra Merlotti](https://www.unibo.it/sitoweb/alessandra.merlotti2)!
