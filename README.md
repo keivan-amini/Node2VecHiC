@@ -71,7 +71,7 @@ python3 -m pytest
   <img src="https://github.com/keivan-amini/Node2VecHiC/blob/main/plot/pca_chromosome_cancer.png" align="centre"   alt="map"/>
 </p>
 <p align="center">
-  <img src="https://github.com/keivan-amini/Node2VecHiC/blob/main/plot/pca_chromosome_cancer.png" align="centre"   alt="map"/>
+  <img src="https://github.com/keivan-amini/Node2VecHiC/blob/main/plot/cancer_hic_chr1.png" align="centre"   alt="map"/>
 </p>
 
 ## References and thanks
