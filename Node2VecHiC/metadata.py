@@ -141,7 +141,7 @@ class Metadata:
                 chromosome.
         """
         nodes = np.arange(self.start[chromosome],
-                          self.end[chromosome] + 1)
+                          self.end[chromosome])
         return nodes
 
     def get_dict_chromosomes(self) -> dict:
