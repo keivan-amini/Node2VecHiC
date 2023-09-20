@@ -90,6 +90,7 @@ class HiC:
         self.path = matrix_path
         self.data_frame = self.get_df()
         self.graph, self.attributes = self.get_graph_attributes()
+        self.name = self.path.replace('..\\data\\', '').replace('.csv', '')
 
 
     def get_df(self) -> pd.DataFrame:
