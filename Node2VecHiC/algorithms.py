@@ -177,9 +177,9 @@ def run_pca(data_frame: pd.DataFrame,
 
     Return
     ------
-        components (np.ndarray):
-            array of shape (n_samples, n_features_new) containing
-            the extracted principal components.
+        principal_df (pd.DataFrame):
+            dataframe containing the principal components
+            features.
 
     """
     dimensions = np.arange(n_components)
@@ -190,8 +190,7 @@ def run_pca(data_frame: pd.DataFrame,
     principal_df = pd.DataFrame(data = principal_components,
                                 columns = dimensions,
                                 index = indexes) # indexes is necessary if we remove empy axes!
-    #components = principal_df.loc[:, dimensions].values
-    return principal_df #TODO change docstrings since we now just return principal_df
+    return principal_df
 
 
 def normalize_features(data_frame: pd.DataFrame) -> np.ndarray:
