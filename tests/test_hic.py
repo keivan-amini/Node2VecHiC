@@ -6,16 +6,40 @@ from hypothesis import given, strategies as st
 import numpy as np
 import networkx as nx
 import pandas as pd
+from test_metadata import generate_metadata
 from Node2VecHiC.metadata import Metadata
-from Node2VecHiC.hic import HiC, get_complementary_list, remove_empty_axis
+from Node2VecHiC.hic import HiC, get_complementary_list
 
 np.random.seed(123)
 
-# Defining instance of the class
-METADATA_PATH = '..\\data\\metadata_hic.xlsx'
-CANCER_PATH = '..\\data\\cancer_hic.csv'
+
+def generate_hic() -> str:
+    """
+    Generate a fake hic file and store it in .csv
+    
+    Return
+    ------
+        path (str):
+            path of the .csv hic file.
+    """
+    number_nodes = 300
+    matrix = np.random.randint(low = 0,
+                            high = 1000,
+                            size = (number_nodes, number_nodes))
+    matrix = (matrix + matrix.T) // 2
+    np.fill_diagonal(matrix, 0)
+    hi_c = pd.DataFrame(matrix)
+    path = 'hic.csv'
+    hi_c.to_csv(path,
+                index = False,
+                header = False)
+    return path
+
+# Defining instance of the classes
+METADATA_PATH = generate_metadata()
+HIC_PATH = generate_hic()
 metadata = Metadata(METADATA_PATH)
-cancer_hic = HiC(metadata, CANCER_PATH) # maybe to change with a general .csv ?
+hic = HiC(metadata, HIC_PATH)
 
 
 def test_get_df():
@@ -24,7 +48,7 @@ def test_get_df():
     WHEN: applying the get_df() function
     THEN: the returned dataframe is a pd.DataFrame
     """
-    data_frame = cancer_hic.get_df()
+    data_frame = hic.get_df()
     isinstance(data_frame, pd.DataFrame)
 
 
@@ -42,7 +66,7 @@ def test_block_df(selected_chromosome: int):
     this is not true for selected_nodes array.
     For this reason, before the assertion we remove these empty nodes.
     """
-    block_dfs = cancer_hic.get_block_df(selected_chromosome)
+    block_dfs = hic.get_block_df(selected_chromosome)
     selected_nodes = metadata.get_nodes(selected_chromosome)
     empty_nodes = []
     for data_frame in block_dfs:
@@ -56,70 +80,23 @@ def test_block_df(selected_chromosome: int):
 
 def test_get_attributes():
     """
-    GIVEN:
-    WHEN:
-    THEN:        
+    GIVEN: an instance of the hic class
+    WHEN: calling the method get_graph_attributes()
+    THEN: the attributes are composed by the same number
+    of nodes indexes.   
     """
-    pass
+    _, attributes = hic.get_graph_attributes()
+    assert len(attributes) == len(hic.nodes)
 
-
-def test_block_graph():
+@given(selected_chromosome = st.integers(min_value = 0,
+                                         max_value = len(metadata.data_frame)-1))
+def test_block_graph(selected_chromosome):
     """
     GIVEN: a hic instance
     WHEN: applying the function get_block_graph()
     THEN: all the elements in the returned list are nx.Graph
     structures. 
     """
-    graphs_list = cancer_hic.get_block_graph()
+    graphs_list = hic.get_block_graph(selected_chromosome)
     for graph in graphs_list:
         isinstance(graph, nx.Graph)
-
-
-
-
-# Generate a main list and a reference list to test the
-# get_complementary_list() function
-
-main_elements = 5
-reference_elements = 10
-n = metadata.end[-1]
-k = np.random.randint(1, n)
-@given(
-    main_list=st.lists(
-        st.integers(min_value = 1, max_value = k),
-        min_size = 1,
-        max_size = main_elements,
-        unique = True,
-    ),
-    reference_list=st.lists(
-        st.integers(min_value = 1, max_value = n),
-        min_size = main_elements,
-        max_size = reference_elements,
-        unique = True,
-    ),
-)
-def test_get_complementary_list(main_list: list,
-                                reference_list: list):
-    """
-    GIVEN: a 'main_list' and a 'reference_list'
-    WHEN: applying the function get_complementary_list()
-    THEN: 
-    """
-    print(" la main_list vale", main_list)
-    print("la reference_list vale", reference_list)
-    complementary_list = get_complementary_list(main_list,
-                                                reference_list)
-    print("la complementary_list vale", complementary_list)
-    
-    if any(element not in reference_list for element in main_list):
-        assert complementary_list != reference_list
-    
-    
-
-def test_remove_empty_axis():
-    """
-    GIVEN: a pd.DataFrame
-    WHEN: applying the function remove_empty_axis() two times
-    THEN: the returned datafr
-    """ 
-    

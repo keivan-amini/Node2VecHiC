@@ -17,10 +17,11 @@ def generate_metadata() -> str:
             path of the .csv metadata file.
 
     """
-    metadata = {'chr': ['chr1', 'chr2', 'chr3', 'chr4'],
+    number_nodes = 300
+    data = {'chr': ['chr1', 'chr2', 'chr3', 'chr4'],
                 'start': [1, 31, 101, 201,],
-                'end': [30, 100, 200, 299]} 
-    metadata = pd.DataFrame(metadata)
+                'end': [30, 100, 200, number_nodes - 1]} 
+    metadata = pd.DataFrame(data)
     path = 'metadata.csv'
     metadata.to_csv('metadata.csv', index = False)
     return path
