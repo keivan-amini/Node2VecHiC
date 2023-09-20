@@ -10,7 +10,6 @@ class defined in the metadata.py module.
 import networkx as nx
 import pandas as pd
 import numpy as np
-#openpyxl needed
 
 
 class HiC:
@@ -34,15 +33,15 @@ class HiC:
         get_df()
             transform .csv adjacency matrix
             in Pandas dataframe format.
-        get_block_df(selected_chromosome = 1)
+        get_block_df(selected_chromosome)
             return a list containing dataframes for all possible
             pair of chromosomes with the input selected_chromosome.
         get_attributes()
             get the attributes of the Hi-C network related to the
             adjacency matrix.
-        get_block_graph()
+        get_block_graph(selected_chromosome)
             return a list containing graphs related to the block_df
-            list. #TODO maybe change
+            list.
 
 
     Attributes
@@ -89,17 +88,14 @@ class HiC:
         self.nodes = self.metadata.nodes
 
         self.path = matrix_path
-        self.name = self.path.replace('..\\data\\', '').replace('.csv', '')
         self.data_frame = self.get_df()
         self.graph, self.attributes = self.get_graph_attributes()
-
-        self.selected_chromosome = 4 #chr20
 
 
     def get_df(self) -> pd.DataFrame:
         """
         Get the dataframe containing the Hi-C data interpreted
-        as an adjacency matrix, with empty axis removed.
+        as an adjacency matrix and remove empty axis.
         
         Return
         ------
@@ -108,11 +104,11 @@ class HiC:
                 empty axis removed.
         """
         data_frame = pd.read_csv(self.path, header = None)
-        data_frame = remove_empty_axis(data_frame) #TODO: does it has sense to remove empty axes?
+        data_frame = remove_empty_axis(data_frame)
         return data_frame
 
     def get_block_df(self,
-                     selected_chromosome: int = 1) -> list:
+                     selected_chromosome: int) -> list:
         """
         Create a list containing dataframes holding only the
         nodes associated with the selected_chromosome and, in turn,
@@ -126,7 +122,6 @@ class HiC:
                 the selected chromosome to which we are going to create different
                 block data frames, regarding all the possible couples between the
                 selected chromosome and all the other chromosomes.
-                Default is 1 (chr6), the one with unobservable traslocation.
         Return
         ------
             block_dfs (list):
@@ -169,19 +164,35 @@ class HiC:
         attributes = dict(sorted(attributes.items())) # order by items
         return graph, attributes
 
-    def get_block_graph(self) -> list:
+    def get_block_graph(self, selected_chromosome: int) -> list:
         """
         Get a list containing the graphs associated with the
         block data frames, for each couple of chromosomes in
         the metadata file.
 
+        Example: suppose we are working with the chromosomoes
+        labelled by 0,1,2,3. If selected_chromosome = 1, the output
+        list will be composed by:
+
+            [G(1,0), G(1,2), G(1,3)]
+        
+        where G(i,j) is the graph structure that consider only
+        the nodes related to chromosomes i and j.
+        At the end, we obtain a list of graphs that consider the input
+        chromosomes and once each the other chromosomes.
+
+        Parameter
+        --------
+            selected_chromosome (int):
+                ineteger number representing the wanted chromosome
+                useful to generate the graphs list.
         Return
         ------
             graphs_list (list):
                 list containing graphs structure related to the
 
         """
-        block_dfs = self.get_block_df(selected_chromosome = self.selected_chromosome) # non ha senso questa linea
+        block_dfs = self.get_block_df(selected_chromosome)
         graphs_list = []
 
         for block_df in block_dfs:
@@ -192,19 +203,32 @@ class HiC:
 def get_complementary_list(main_list: list,
                            reference_list: list) -> list:
     """
-    Get a list of elements from the reference list that are not present in the main list.
+    Get a list of elements from the reference list that are
+    not present in the main list.
 
     Parameters
     ----------
         main_list (list):
             List of elements to be used as the base of comparison.
+            In the usual scenario, main_list should be a list such
+            as:
+                main_list = [... , k]
+            
         reference_list (list):
-            List of elements from which complementary elements are extracted.
+            List of elements from which complementary elements are
+            extracted. In the usual scenario, reference_list should
+            be a ordered list such as:
+                reference_list = [... , k, ..., n]
+            where k < n.
 
     Return
     ------
         complementary_list (list):
-            list containing elements from the reference_list that are not present in the main_list.
+            list containing elements from the reference_list
+            that are not present in the main_list. In the usual
+            scenario, complementary_list should be a ordered list
+            such as:
+                complementary_list = [k+1, ... , n]
     """
     complementary_list = [num for num in reference_list if num not in main_list]
     return complementary_list
