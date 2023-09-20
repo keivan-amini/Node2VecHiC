@@ -3,13 +3,11 @@ This script has the aim to construct the Graphics() class,
 useful to visualize features emerging after the application
 of algorithms on the adjacency matrix.
 """
-
-from random import randint
+import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# per la grafica: fai funzione che prende in input una lista di dataframe e realizza tanti plot quanti sono i df!
-#TODO to finish docstring and nice code!!!!!!!!!!!!
+np.random.seed(123)
 
 
 class Graphics:
@@ -17,17 +15,51 @@ class Graphics:
     """
     Description
     -----------
+    This class is useful to visualize plots, in order
+    to qualitatively check the emergence of clustering
+    on principal components data frame obtained after pca
+    and node2vec algorithms.
 
     
     Methods
     -------
+        get_colors_list()
+            get a list that contains a color for each chromosome
+            in the metadata file. First elements have been manually
+            chosen, the rest are randomly chosen.
+        get_color_dict()
+            get a dictionary that maps each chromosome to a color.
+        get_plot_chromosome(principal_df, save)
+            given an input a dataframe that must be thought as a
+            dataframe containing the principal components, visualize
+            a scatter plot. The parameter save determines the eventual
+            saving of the picture.
+        get_plot_blocks(principal_block_dfs, selected_chromosome, save)
+            given an input principal block dataframe and a selected
+            chromosome, visualize the scatters plots related to a list of
+            graphs.
 
     Attributes
     ----------
-    
-    
-    """
+        hi_c (object):
+            instance of the class HiC().
+        metadata_df (pd.DataFrame):
+            dataframe containing the metadata.
+        attributes (dict):
+            dictionary containing the index nodes related to
+            each chromosome.
+        name (str):
+            name of the instance Hi-C() class.
+        number_chromosomes (int):
+            number of the involved chromosome in the
+            metadata file.
+        color_list (list):
+            list containing colors, useful for the visualization
+            purpose.
+        color_dict (dict):
+            dict assigning each chromosome to a certain color.
 
+    """
 
     def __init__(self, hi_c):
 
@@ -37,7 +69,6 @@ class Graphics:
         self.name = self.hi_c.name
 
         self.number_chromosomes = len(self.metadata_df)
-
         self.color_list = self.get_colors_list()
         self.color_dict = self.get_color_dict()
 
@@ -51,12 +82,11 @@ class Graphics:
         ------
             colors (list):
                 list containing colors related to chromosomes.
-                TODO to tests len == self.number_chromosomes
         
         """
         predefined_colors = ['tab:blue', 'tab:green', 'tab:red',
                              'tab:orange', 'tab:pink'] # honestly, colors I like!
-        random_colors = [f'#{randint(0, 0xFFFFFF):06X}'
+        random_colors = [f'#{np.random.randint(0, 0xFFFFFF):06X}'
                          for _ in range(self.number_chromosomes - len(predefined_colors))]
         colors = predefined_colors + random_colors
         return colors
@@ -87,37 +117,30 @@ class Graphics:
         each scatter point is colorized with respect to the associated
         chromosome.
 
-
         Parameters
         ----------
             principal_df (pd.DataFrame):
                 data frame containing principal components, obtained
                 after performing a PCA on a certain dataset.
-                Maximum number of components accepted is 3. TODO tests
+                Maximum number of components accepted is 3.
             save (bool):
                 boolean variable. If true, save the visualization in
                 the plot folder. 
         """
-
         fig, axes = plt.subplots()
         axes.set_axisbelow(True)
         axes.grid()
-
         n_components = len(principal_df.columns)
-
         for index, obs in principal_df.iterrows():
             if index in self.attributes:
                 components = obs[:n_components]
                 axes.scatter(*components, c = self.color_dict[self.attributes[index]],
                         s = 7, label = str(self.attributes[index]))
-
         axes_labels = [f"Principal Component {i+1}" for i in range(min(n_components, 3))]
-
         for i, label in enumerate(axes_labels):
             getattr(axes, ['set_xlabel', 'set_ylabel', 'set_zlabel'][i])(label)
-
         axes.legend()
-        axes.set_title(str(self.name) + ' network.')
+        axes.set_title(str(self.name) + ' network')
         legend_without_duplicate_labels(axes)
         if save:
             fig.savefig('..\\plot\\pca_chromosome_' + str(self.name))
@@ -126,23 +149,36 @@ class Graphics:
 
     def get_plot_blocks(self,
                         principal_block_dfs: list,
-                        selected_chromosome: int, #TODO docstrings for selected_chromosomes
-                        save: bool = True):
+                        selected_chromosome: int,
+                        save: bool = False):
         """
-        pisello
+        Show block scatter visualization of principal components,
+        in which each subplot corresponds to a certain couple of
+        chromosomes. At the moment, this function just works in 2-D
+        visualization, i.e. when the selected number of principal
+        components for the dimensions reduction is 2.
+
+        Parameters
+        ----------
+            principal_blocks_dfs (list):
+                list containing the different blocks dataframes
+                after PCA has been performed.
+            selected_chromosome (int):
+                label of the chromosome protagonist of the list
+                block.
+            save (bool):
+                boolean variable useful to decide if one would
+                like to save the picture or not.
+                Default is False.
+
         
         """
-        
         fig, axes = plt.subplots(nrows = 1,
                                  ncols = len(principal_block_dfs),
                                  figsize = (16, 4))
 
-        string_selected_chromosome = (self.attributes[selected_chromosome]) #TODO c'è chiaramente un problema!!!
-
-        #fig.suptitle(str(self.name))
-
+        name_selected_chromosome = self.attributes[selected_chromosome]
         n_components = max(len(df.columns) for df in principal_block_dfs)
-
         for axes_index, ax in enumerate(axes):
             ax.set_axisbelow(True)
             ax.grid()
@@ -154,96 +190,12 @@ class Graphics:
                             s = 7, label = str(self.attributes[obs_index]))
             ax.legend()
             legend_without_duplicate_labels(ax)
-            #ax.set_title(f'Subplot {axes_index + 1}')  # Set titles for each subplot
-
-
-        
-
         plt.tight_layout()
         if save:
-            fig.savefig('..\\plot\\blocks\\' + str(self.name) + '_' + string_selected_chromosome)
+            fig.savefig('..\\plot\\blocks\\' + str(self.name) + '_' + name_selected_chromosome)
         plt.show()
  
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    def get_plot_chromosome_comparison(self, df1, df2): #non voglio self. voglio che self.attributes sia variabile globale. non mi piace
-            fig, axes = plt.subplots() 
-            axes.set_axisbelow(True)
-            axes.grid()
-            for index, x in df1.iterrows():
-                axes.scatter(x[0], x[1], c = self.color_dict[self.attributes[index]], marker = 'x', s = 30, label = str(self.attributes[index]))  #tumor
-            for index, x in df2.iterrows():
-                axes.scatter(x[0], x[1], c = self.color_dict[self.attributes[index]], marker = 'v', s = 30, label = str(self.attributes[index])) #healthy
-            axes.set_xlabel("First principal component")
-            axes.set_ylabel("Second principal component")
-            #aggiungere un ulteriore legenda con la distinzione tra tumore e cellula sana
-            axes.set_title('Chromosome comparison for healthy and tumor cell with PCA and Node2Vec')
-            legend_without_duplicate_labels(axes)
-            fig.savefig('..\plot\pca_chromosome_comparison' + '-' + str(self.D) + 'dim.png') #cambiare nome
-            plt.show() #avere il grafico a destra e avere una sola legenda
-
-
-
-
-
-
-
-
-
-
-    
-"""
-def get_comparison_blocks(principal_components):
-    fig, axes = plt.subplots()
-    axes.set_axisbelow(True)
-    axes.grid()
-    x1, y1 = principal_components[:,0], principal_components[:,1]
-    axes.scatter(x1, y1, color = "tab:red", s= 4, label = 'Cancer Hi-C')
-"""
-
-
-
-
-# ci potrebbe stare fare un plottino per tante dimensioni del problema node2vec
-
-# di questa funzione, per adesso non me ne frega un cazzo proprio. e non funziona nemmeno perchè selfD non è qui
-def get_plot(features1, features2): #non mi piace il fatto che features1 debba essere per forza cancro
-    fig, axes = plt.subplots() 
-    axes.set_axisbelow(True)
-    axes.grid()
-    x1, y1 = features1[:,0], features1[:,1]
-    x2, y2 = features2[:,0], features2[:,1]
-    axes.scatter(x1, y1, color = "tab:red", s= 4, label = 'Cancer Hi-C') # da ottimizzare
-    axes.scatter(x2, y2, color = "tab:green", s = 4, label = 'Healthy Hi-C')
-    axes.set_title('PCA on node2vec algorithm')
-    axes.set_xlabel("First principal component")
-    axes.set_ylabel("Second principal component")
-    axes.legend()
-    #fig.savefig('..\plot\pca' + '-' + str(self.D) + 'dim.png') #cambiare nome
-    plt.show()
 
 def legend_without_duplicate_labels(axes: object):
     """
@@ -258,31 +210,3 @@ def legend_without_duplicate_labels(axes: object):
     handles, labels = axes.get_legend_handles_labels()
     unique = [(h, l) for i, (h, l) in enumerate(zip(handles, labels)) if l not in labels[:i]]
     axes.legend(*zip(*unique))
-
-
-
-
-
-
-""" Generate different images: 1,2,3,4 with blocks_df
-# Iterate through the specified timesteps and visualize the images
-for index, i in enumerate([10, 50, 100, 185]):
-    # Generate noisy image and noise using forward_noising function
-    ## ToDo
-    noisy_im, noise = forward_noising(jax.random.PRNGKey(42),
-                                      sample_mnist,
-                                      i,
-                                      sqrt_alpha_bar,
-                                      one_minus_sqrt_alpha_bar)
-
-    # Plot the noisy image
-    plt.subplot(1, 4, index + 1)
-    plt.imshow(jnp.squeeze(jnp.squeeze(noisy_im, -1), 0), cmap='gray')
-    plt.title(f"Timestamp {i}")
-    plt.axis('off')
-
-# Show the figure with the visualized images
-plt.show()
-
-
-"""
