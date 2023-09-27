@@ -1,110 +1,211 @@
 """
 Main script controlling the execution of the different modules.
-To run experiment, it is suggested to look at the tutorial instead of this file
+Simulations useful to reproduce the plots contained in Complex Network project (see .pdf folder)
 """
 import numpy as np
 
-from metadata import Metadata
-from hic import HiC
-from algorithms import run_node2vec, run_pca, get_embeddings
-from graphics import Graphics
+from Node2VecHiC.metadata import Metadata
+from Node2VecHiC.hic import HiC
+from Node2VecHiC.algorithms import run_node2vec, run_pca
+from Node2VecHiC.graphics import Graphics
 
 np.random.seed(1)
 
 METADATA_PATH = '..\\data\\metadata_hic.xlsx'
 CANCER_PATH = '..\\data\\cancer_hic.csv'
-HEALTHY_PATH = '..\\data\\healthy_hic.csv'
-
-EMBEDDINGS_PATH = '..\\model\\blocks\\cancer_20-1.csv'
-EMBEDDINGS_PATH1 = '..\\model\\blocks\\cancer_20-6.csv'
-EMBEDDINGS_PATH2 = '..\\model\\blocks\\cancer_20-X.csv'
-EMBEDDINGS_PATH3 = '..\\model\\blocks\\cancer_20-10.csv'
 
 
 metadata = Metadata(METADATA_PATH)
 cancer_hic = HiC(metadata, CANCER_PATH)
+cancer_graph = cancer_hic.graph
 
-
+"""
+################################################## WALK LENGTH TEST: 10,100,1000,1500
 # Node2Vec parameters
 N_DIMENSIONS = 10 
-WALK_LENGTH = 300 
+NUM_WALKS = 10 
+WEIGHT_KEY = 'weight'
+WORKERS = 1 
+P = 1 
+Q = 0.5 
+
+WALK_LENGTH = [10, 100,1000,1500]
+number_plots = 4
+#PCA
+N_COMPONENTS = 2
+
+cancer_graphics = Graphics(cancer_hic)
+
+for index in range(number_plots):
+    EMBEDDINGS_PATH = '..\\model\\walk_length_' + str(index) + '.csv'
+    wl = WALK_LENGTH[index]
+    print("walk_length = " + str(wl))
+    parameters = [N_DIMENSIONS, wl, NUM_WALKS, WEIGHT_KEY, WORKERS, P, Q]
+
+
+    embeddings, indexes = run_node2vec(cancer_graph,
+                                   parameters,
+                                   EMBEDDINGS_PATH)
+    principal_df = run_pca(data_frame=embeddings,
+                           n_components=N_COMPONENTS)
+    cancer_graphics.get_plot_chromosome(principal_df,
+                                        title = "Walk length = " + str(wl),
+                                        save_path= '..\\plot\\walk_length\\' + str(wl)
+"""
+"""
+################################################### NUMBER WALK TEST: 10,100,1000,1500
+# Node2Vec parameters
+N_DIMENSIONS = 10
+WALK_LENGTH = 10 
+WEIGHT_KEY = 'weight'
+WORKERS = 1
+P = 1 
+Q = 0.5 
+
+
+NUM_WALKS = [10, 100, 1000, 1500]
+number_plots = 4
+#PCA
+N_COMPONENTS = 2
+
+cancer_graphics = Graphics(cancer_hic)
+
+for index in range(number_plots):
+    EMBEDDINGS_PATH = '..\\model\\num_walks_' + str(index) + '.csv'
+    nw = NUM_WALKS[index]
+    print("num_walks = " + str(nw))
+    parameters = [N_DIMENSIONS, WALK_LENGTH, nw, WEIGHT_KEY, WORKERS, P, Q]
+
+
+    embeddings, indexes = run_node2vec(cancer_graph,
+                                   parameters,
+                                   EMBEDDINGS_PATH)
+    principal_df = run_pca(data_frame=embeddings,
+                           n_components=N_COMPONENTS)
+    cancer_graphics.get_plot_chromosome(principal_df,
+                                        title = "Number walks = " + str(nw),
+                                        save_path= '..\\plot\\num_walks\\' + str(nw))
+"""
+"""
+###################################################  p and q values for a BFS-like exploration strategy
+
+
+    p = 2.0, q = 0.5
+    p = 1.5, q = 0.75
+    p = 2.0, q = 0.8
+    p = 1.8, q = 0.9
+    p = 1.6, q = 0.6
+"""
+
+"""
+# Node2Vec parameters
+N_DIMENSIONS = 10
+WALK_LENGTH = 10 
+WEIGHT_KEY = 'weight'
+WORKERS = 1
+P = [2,1.5,2.0,1.8,1.6] 
+Q = [0.5, 0.75, 0.8, 0.9, 0.6]
 NUM_WALKS = 10
+
+
+number_plots = 5
+#PCA
+N_COMPONENTS = 2
+
+cancer_graphics = Graphics(cancer_hic)
+
+for index in range(number_plots):
+    EMBEDDINGS_PATH = '..\\model\\bfs_' + str(index) + '.csv'
+    pi = P[index]
+    qi = Q[index]
+    print("P = " + str(pi) + ". Q = " + str(qi))
+    parameters = [N_DIMENSIONS, WALK_LENGTH, NUM_WALKS, WEIGHT_KEY, WORKERS, pi, qi]
+
+    embeddings, indexes = run_node2vec(cancer_graph,
+                                   parameters,
+                                   EMBEDDINGS_PATH)
+    principal_df = run_pca(data_frame=embeddings,
+                           n_components=N_COMPONENTS)
+    cancer_graphics.get_plot_chromosome(principal_df,
+                                        title = "BFS strategy. P = " + str(pi) + ", Q = " + str(qi),
+                                        save_path= '..\\plot\\bfs\\' + str(pi) + '_' + str(qi)+'.png')
+
+
+"""
+
+###################################################  p and q values for a depth-first sampling DFS strategy using Node2Vec:
+"""
+    p = 0.5, q = 2.0
+    p = 0.75, q = 1.5
+    p = 0.3, q = 1.8
+    p = 0.8, q = 1.7
+    p = 0.6, q = 2.2
+
+"""
+"""
+# Node2Vec parameters
+N_DIMENSIONS = 10
+WALK_LENGTH = 10 
+WEIGHT_KEY = 'weight'
+WORKERS = 1
+P = [0.5, 0.75, 0.3, 0.8, 0.6] 
+Q = [2.0, 1.5, 1.8, 1.7, 2.2]
+NUM_WALKS = 10
+
+
+number_plots = 5
+#PCA
+N_COMPONENTS = 2
+
+cancer_graphics = Graphics(cancer_hic)
+
+for index in range(number_plots):
+    EMBEDDINGS_PATH = '..\\model\\dfs_' + str(index) + '.csv'
+    pi = P[index]
+    qi = Q[index]
+    print("P = " + str(pi) + ". Q = " + str(qi))
+    parameters = [N_DIMENSIONS, WALK_LENGTH, NUM_WALKS, WEIGHT_KEY, WORKERS, pi, qi]
+
+    embeddings, indexes = run_node2vec(cancer_graph,
+                                   parameters,
+                                   EMBEDDINGS_PATH)
+    principal_df = run_pca(data_frame=embeddings,
+                           n_components=N_COMPONENTS)
+    cancer_graphics.get_plot_chromosome(principal_df,
+                                        title = "DFS strategy. P = " + str(pi) + ", Q = " + str(qi),
+                                        save_path= '..\\plot\\dfs\\' + str(pi) + '_' + str(qi)+'.png')
+
+"""
+
+######################################## DIMENSIONS = [10,50,100,1000]
+# Node2Vec parameters
+N_DIMENSIONS = [10,50,100,1000]
+WALK_LENGTH = 10 
 WEIGHT_KEY = 'weight'
 WORKERS = 1
 P = 1
 Q = 0.5
-
-parameters = [N_DIMENSIONS, WALK_LENGTH, NUM_WALKS, WEIGHT_KEY, WORKERS, P, Q,]
-
-"""
-cancer_graph = cancer_hic.graph
-
-embeddings, indexes = run_node2vec(cancer_graph,
-                                   parameters,
-                                   EMBEDDINGS_PATH)
-"""
+NUM_WALKS = 10
 
 
-#Blocks
-
-selected_chromosome = 1
-graph_block_lists = cancer_hic.get_block_graph(selected_chromosome)
-embeddings_path = [EMBEDDINGS_PATH, EMBEDDINGS_PATH1, EMBEDDINGS_PATH2, EMBEDDINGS_PATH3]
-embeddings = []
-
-for idx, graph in enumerate(graph_block_lists):
-    embeddings_found, _ = run_node2vec(graph,
-                                       parameters,
-                                       embeddings_path[idx])
-    embeddings.append(embeddings_found)
-
-"""
-
-
-
-
-#OR
-
-embeddings, indexes = get_embeddings(N_DIMENSIONS, EMBEDDINGS_PATH)
-embeddings1, indexes1 = get_embeddings(N_DIMENSIONS, EMBEDDINGS_PATH1)
-embeddings2, indexes2 = get_embeddings(N_DIMENSIONS, EMBEDDINGS_PATH2)
-embeddings3, indexes3 = get_embeddings(N_DIMENSIONS, EMBEDDINGS_PATH3)
-
-"""
-
-
+number_plots = 4
 #PCA
 N_COMPONENTS = 2
 
-block = []
-for model in embeddings:
-    principal_df = run_pca(data_frame=model,
-                           n_components=N_COMPONENTS)
-    block.append(principal_df)
-
-
-# Graphics
-
 cancer_graphics = Graphics(cancer_hic)
-#cancer_graphics.get_plot_chromosome(principal_df)
-cancer_graphics.get_plot_blocks(block, selected_chromosome, False)
 
-# Blocks
+for index in range(number_plots):
+    EMBEDDINGS_PATH = '..\\model\\dim_' + str(index) + '.csv'
+    dim = N_DIMENSIONS[index]
+    print("dim = " + str(dim))
+    parameters = [dim, WALK_LENGTH, NUM_WALKS, WEIGHT_KEY, WORKERS, P, Q]
 
-"""
-graphs_list = cancer_hic.get_block_graph()
-embeddings_path = []
-for index in range(len(graphs_list)):
-    embeddings_path.append('..\\model\\blocks\\cancer_hic_embedding-block-' + str(index) + '.csv')
-
-principal_blocks_df = []
-for graph in graphs_list:
-    embeddings, _ = run_node2vec(graph,
-                                 parameters,
-                                 embeddings_path) # to understand how to put the embeddings path
-    principal_df = run_pca(embeddings,
-                           N_COMPONENTS)
-    principal_blocks_df.append(principal_df)
+    embeddings, indexes = run_node2vec(cancer_graph,
+                                   parameters,
+                                   EMBEDDINGS_PATH)
+    principal_df = run_pca(data_frame=embeddings,
+                           n_components=N_COMPONENTS)
+    cancer_graphics.get_plot_chromosome(principal_df,
+                                        title = "Number dimensions = " + str(dim) + " before PCA",
+                                        save_path= '..\\plot\\dim\\' + str(dim))
     
-cancer_graphics.get_plot_blocks(principal_blocks_df)
-"""
