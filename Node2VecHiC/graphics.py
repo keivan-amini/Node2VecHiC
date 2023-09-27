@@ -29,7 +29,7 @@ class Graphics:
             chosen, the rest are randomly chosen.
         get_color_dict()
             get a dictionary that maps each chromosome to a color.
-        get_plot_chromosome(principal_df, save)
+        get_plot_chromosome(principal_df, title, save_path)
             given an input a dataframe that must be thought as a
             dataframe containing the principal components, visualize
             a scatter plot. The parameter save determines the eventual
@@ -111,7 +111,8 @@ class Graphics:
 
     def get_plot_chromosome(self,
                             principal_df: pd.DataFrame,
-                            save: bool = False):
+                            title: str,
+                            save_path: str = None):
         """
         Show scatter visualization of principal components in which
         each scatter point is colorized with respect to the associated
@@ -123,9 +124,11 @@ class Graphics:
                 data frame containing principal components, obtained
                 after performing a PCA on a certain dataset.
                 Maximum number of components accepted is 3.
-            save (bool):
-                boolean variable. If true, save the visualization in
-                the plot folder. 
+            title (str):
+                string representing the title of the plot.
+            save_path (str):
+                string representing the path in which the plot
+                will be saved. Default is None.
         """
         fig, axes = plt.subplots()
         axes.set_axisbelow(True)
@@ -140,10 +143,10 @@ class Graphics:
         for i, label in enumerate(axes_labels):
             getattr(axes, ['set_xlabel', 'set_ylabel', 'set_zlabel'][i])(label)
         axes.legend()
-        axes.set_title(str(self.name) + ' network')
+        axes.set_title(str(title))
         legend_without_duplicate_labels(axes)
-        if save:
-            fig.savefig('..\\plot\\pca_chromosome_' + str(self.name))
+        if save_path is not None:
+            fig.savefig(save_path)
         plt.show()
 
 
@@ -194,7 +197,7 @@ class Graphics:
         if save:
             fig.savefig('..\\plot\\blocks\\' + str(self.name) + '_' + name_selected_chromosome)
         plt.show()
- 
+
 
 
 def legend_without_duplicate_labels(axes: object):
