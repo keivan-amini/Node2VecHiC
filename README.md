@@ -5,15 +5,14 @@ In the realm of genomics, unraveling the intricacies of chromosome translocation
 This repository is not designed as a genomic data analysis library. Instead, it relies on the [Node2Vec](https://github.com/eliorc/node2vec) and [scikit-learn](https://scikit-learn.org/stable/) libraries, saving you time on the data engineering part. Think of it as a tool tailored for visualizing (possible) genomic translocations when you have both a metadata file and Hi-C data at your disposal.
 
 ## Repository structure
-TODO (add tree)
 The repository is composed by different folders:
 * [data](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/data) contains Hi-C data and Metadata file.
 * [Node2VecHiC](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/Node2VecHiC) contains all python modules used in the project.
 * [model](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/model) contains the outputs embeddings from the Node2Vec algorithm.
 * [plot](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/plot) contains the plotted figures.
 * [tutorial](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/tutorial) contains an easy how-to notebook exploiting some functions of the repository.
-* [tests](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/tests) contains tests for the scripts. TODO
-* [pdf](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/pdf) contains the full project documentation, with mathematical theory, figures and results.
+* [tests](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/tests) contains some tests for the modules.
+* [pdf](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/pdf) contains the full project documentation, with mathematical theory, figures and results. This folder will come before 10 days :)
 
 
 ## Requirements
