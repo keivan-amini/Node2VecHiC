@@ -12,7 +12,7 @@ The repository is composed by different folders:
 * [plot](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/plot) contains the plotted figures.
 * [tutorial](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/tutorial) contains an easy how-to notebook exploiting some functions of the repository.
 * [tests](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/tests) contains some tests for the modules.
-* [pdf](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/pdf) contains the full project documentation, with mathematical theory, figures and results. This folder will come before 10 days :)
+* [pdf](https://github.com/keivan-amini/Node2Vec-Hi-C/tree/main/pdf) contains the full project documentation, with mathematical theory, figures and results.
 
 
 ## Requirements
