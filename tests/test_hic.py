@@ -8,7 +8,7 @@ import networkx as nx
 import pandas as pd
 from test_metadata import generate_metadata
 from Node2VecHiC.metadata import Metadata
-from Node2VecHiC.hic import HiC, get_complementary_list
+from Node2VecHiC.hic import HiC, remove_empty_axis, get_complementary_list
 
 np.random.seed(123)
 
@@ -22,7 +22,7 @@ def generate_hic() -> str:
         path (str):
             path of the .csv hic file.
     """
-    number_nodes = 300
+    number_nodes = 8
     matrix = np.random.randint(low = 0,
                             high = 1000,
                             size = (number_nodes, number_nodes))
@@ -42,15 +42,35 @@ metadata = Metadata(METADATA_PATH)
 hic = HiC(metadata, HIC_PATH)
 
 
-def test_get_df():
+def test_square_property_df():
     """
     GIVEN: an hic instance
     WHEN: applying the get_df() function
-    THEN: the returned dataframe is a pd.DataFrame
+    THEN: the returned dataframe contains a squared matrix.
     """
     data_frame = hic.get_df()
-    isinstance(data_frame, pd.DataFrame)
+    n_rows = data_frame.shape[0]
+    n_columns = data_frame.shape[1]
+    assert n_rows == n_columns
 
+def test_symmetric_property_df():
+    """
+    GIVEN: an hic instance
+    WHEN: applying the get_df() function
+    THEN: the returned dataframe contains a symmetric matrix.
+    """
+    data_frame = hic.get_df()
+    assert (data_frame == data_frame.T).all().all()
+
+
+def test_diagonal_df():
+    """
+    GIVEN: an hic instance
+    WHEN: applying the get_df() function
+    THEN: the returned dataframe has just 0 values in the diagonal
+    """
+    data_frame = hic.get_df()
+    assert np.all(np.diag(data_frame) == 0)
 
 @given(selected_chromosome = st.integers(min_value = 0,
                                          max_value = len(metadata.data_frame)-1))
@@ -100,3 +120,15 @@ def test_block_graph(selected_chromosome):
     graphs_list = hic.get_block_graph(selected_chromosome)
     for graph in graphs_list:
         isinstance(graph, nx.Graph)
+
+def test_get_complementary_list():
+    """
+    GIVEN: a reference list and a main list example
+    WHEN: applying the function get_complementary_list()
+    THEN: the output list is equal to the expected result.
+    """
+    reference_list = list(range(10))
+    main_list = [0, 1, 3, 5, 7, 8]
+    expected_list = [2, 4, 6, 9]
+    output_list = get_complementary_list(main_list, reference_list)
+    assert expected_list == output_list
