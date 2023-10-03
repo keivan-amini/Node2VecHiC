@@ -22,7 +22,10 @@ from sklearn.decomposition import PCA
 
 def run_node2vec(graph: nx.Graph,
                  parameters: list,
-                 embeddings_path: str) -> (pd.DataFrame, list):
+                 embeddings_path: str,
+                 window: int = 10,
+                 min_count: int = 1,
+                 batch_words: int = 4) -> (pd.DataFrame, list):
     """
     Perform the node2vec algorithm with the chosen parameters
     on the input graph, fit the learned model and save the
@@ -66,7 +69,15 @@ def run_node2vec(graph: nx.Graph,
         embeddings_path (string):
             string representing the desired path in which
             the output embeddings is saved.
-
+        window (int), optional:
+            Maximum distance between the current and predicted
+            nodes in the skip-gram model. Default is 10.
+        min_count (int), optional:
+            Ignores all words (nodes) with a total frequency
+            lower than this. Default is 1.
+        batch_words (int), optional):
+            Number of words (nodes) in each batch of words used
+            for training. Default is 4.
 
     Return
     ------
@@ -88,42 +99,12 @@ def run_node2vec(graph: nx.Graph,
                         workers = workers,
                         p = p,
                         q = q)
-    model = fit_model(node2vec)
+    model = node2vec.fit(window,
+                         min_count,
+                         batch_words)
     model.wv.save_word2vec_format(embeddings_path)
     data_frame, indexes = get_embeddings(n_dimensions, embeddings_path)
     return data_frame, indexes
-
-def fit_model(node2vec: object,
-              window: int = 10,
-              min_count: int = 1,
-              batch_words: int = 4) -> object:
-    """
-    Fit the Node2Vec model with specified parameters.
-    Return the model.
-
-    Parameters
-    ----------
-        node2vec (object):
-            Instance of the Node2Vec() class.
-        window (int), optional:
-            Maximum distance between the current and predicted
-            nodes in the skip-gram model. Default is 10.
-        min_count (int), optional:
-            Ignores all words (nodes) with a total frequency
-            lower than this. Default is 1.
-        batch_words (int, optional):
-            Number of words (nodes) in each batch of words used
-            for training. Default is 4.
-
-    Return
-    ------
-        model (object):
-            The fitted Node2Vec model.
-    """
-    model = node2vec.fit(window = window,
-                         min_count = min_count,
-                         batch_words = batch_words)
-    return model
 
 
 def get_embeddings(n_dimensions: int,
