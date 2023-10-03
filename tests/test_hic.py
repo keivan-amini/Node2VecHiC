@@ -121,6 +121,22 @@ def test_block_graph(selected_chromosome):
     for graph in graphs_list:
         isinstance(graph, nx.Graph)
 
+def test_remove_empty_axis():
+    """
+    GIVEN: a data frame example
+    WHEN: applying the function remove_empty_axis()
+    THEN: the output data frame is equal to the expected result.
+    """
+    data = {'A': [1, 2, 3],
+            'B': [0, 0, 0],
+            'C': [4, 5, 6]}
+    data_frame = pd.DataFrame(data)
+    output_data_frame = remove_empty_axis(data_frame)
+    expected_result = {'A': [1, 2, 3],
+                       'C': [4, 5, 6]}
+    expected_data_frame = pd.DataFrame(expected_result)
+    assert output_data_frame.equals(expected_data_frame)
+
 def test_get_complementary_list():
     """
     GIVEN: a reference list and a main list example
