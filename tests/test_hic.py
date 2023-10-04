@@ -35,12 +35,49 @@ def generate_hic() -> str:
                 header = False)
     return path
 
-# Defining instance of the classes
+def generate_block_df() -> list:
+    """
+    Manually generate a list of block data frame, for testing
+    purposes on the function get_block_df(). In this context,
+    selected_chromosome = 2, i.e., chr3.
+
+    Return
+    ------
+        expected_block_dfs (list):
+            list containing the expected dataframes using the
+            function get_block_df() with parameter
+            selected_chromosome = 2.
+    """
+
+    # chr1-chr3
+    data1 = {1: [0, 227, 350],
+             6: [227, 0, 433],
+             7: [350, 433, 0]}
+
+    # chr2-chr3
+    data2 = {3: [0, 474, 140, 858],
+             4: [474, 0, 613, 332],
+             6: [140, 613, 0, 433],
+             7: [858, 332, 433, 0]}
+
+    df1 = pd.DataFrame(data1)
+    df1.index = [1, 6, 7]
+
+    df2 = pd.DataFrame(data2)
+    df2.index = [3, 4, 6, 7]
+
+    expected_block_dfs = [df1, df2]
+    return expected_block_dfs
+
+
+# Defining instance of the classes for testing purposes
 METADATA_PATH = generate_metadata()
 HIC_PATH = generate_hic()
 metadata = Metadata(METADATA_PATH)
 hic = HiC(metadata, HIC_PATH)
 
+
+########## TEST FUNCTIONS ##########
 
 def test_square_property_df():
     """
@@ -67,35 +104,37 @@ def test_diagonal_df():
     """
     GIVEN: an hic instance
     WHEN: applying the get_df() function
-    THEN: the returned dataframe has just 0 values in the diagonal
+    THEN: the returned dataframe has just 0 values in the diagonal.
     """
     data_frame = hic.get_df()
     assert np.all(np.diag(data_frame) == 0)
 
+
 @given(selected_chromosome = st.integers(min_value = 0,
                                          max_value = len(metadata.data_frame)-1))
-def test_block_df(selected_chromosome: int):
+def test_nodes_block_df(selected_chromosome: int):
     """
     GIVEN: the parameter 'selected_chromosome'
     WHEN: applying the get_block_df() function
-    THEN: the returned list contains different pd.DataFrame,
-    and in all of these dataframe the selected_chromosome nodes
-    are present. Here, the simple assertion 'assert node in 
-    data_frame.index' does not hold beacuse at this point, the
-    empty axes have already been removed in the dataframe, while
-    this is not true for selected_nodes array.
-    For this reason, before the assertion we remove these empty nodes.
+    THEN: in all the dataframes, the node associated with
+    the selected chromosome are present.
     """
     block_dfs = hic.get_block_df(selected_chromosome)
     selected_nodes = metadata.get_nodes(selected_chromosome)
-    empty_nodes = []
     for data_frame in block_dfs:
         for node in selected_nodes:
-            if node not in data_frame.index:
-                empty_nodes.append(node)
-        non_empty_nodes = get_complementary_list(empty_nodes, selected_nodes)
-        for node in non_empty_nodes:
             assert node in data_frame.index
+
+def test_get_block_df():
+    """
+    GIVEN: an hic, metadatata, and selected_chromosome parameter
+    WHEN: applying the get_block_df() function
+    THEN: the ouput list is equal to the expected result.
+    """
+    output_list = hic.get_block_df(selected_chromosome = 2)
+    expected_list = generate_block_df()
+    for output_df, expected_df in zip(output_list, expected_list):
+        assert output_df.equals(expected_df)
 
 
 def test_get_attributes():
