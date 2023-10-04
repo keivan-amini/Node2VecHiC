@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from test_metadata import generate_metadata
 from test_hic import generate_hic
-from Node2VecHiC.algorithms import run_node2vec, fit_model, get_embeddings, run_pca, normalize_features
+from Node2VecHiC.algorithms import run_node2vec, get_embeddings, run_pca, normalize_features
 from Node2VecHiC.metadata import Metadata
 from Node2VecHiC.hic import HiC
 

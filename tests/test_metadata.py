@@ -131,7 +131,7 @@ def test_dict_chromosomes():
 
 def test_function_dict_chromosomes():
     """
-    GIVEN: a metadata instance
+    GIVEN: a metadata instance example
     WHEN: applying the get_dict_chromosomes() function
     THEN: output dict is equal to the expected result.
     """

@@ -137,7 +137,7 @@ def test_get_block_df():
         assert output_df.equals(expected_df)
 
 
-def test_get_attributes():
+def test_number_nodes_attributes():
     """
     GIVEN: an instance of the hic class
     WHEN: calling the method get_graph_attributes()
@@ -146,6 +146,22 @@ def test_get_attributes():
     """
     _, attributes = hic.get_graph_attributes()
     assert len(attributes) == len(hic.nodes)
+
+def test_function_get_attributes():
+    """
+    GIVEN: an instance of the hic class and an expected dict
+    WHEN: calling the method get_graph_attributes()
+    THEN: the output dictionary is equal to the expected dictionary.
+    """
+    expected_dict = {0: 'chr1',
+                     1: 'chr1',
+                     2: 'chr2',
+                     3: 'chr2',
+                     4: 'chr2',
+                     5: 'chr3',
+                     6: 'chr3'}
+    _, output_dict = hic.get_graph_attributes()
+    assert output_dict == expected_dict
 
 @given(selected_chromosome = st.integers(min_value = 0,
                                          max_value = len(metadata.data_frame)-1))
