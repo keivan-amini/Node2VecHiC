@@ -99,9 +99,9 @@ def run_node2vec(graph: nx.Graph,
                         workers = workers,
                         p = p,
                         q = q)
-    model = node2vec.fit(window,
-                         min_count,
-                         batch_words)
+    model = node2vec.fit(window = window,
+                         min_count = min_count,
+                         batch_words = batch_words)
     model.wv.save_word2vec_format(embeddings_path)
     data_frame, indexes = get_embeddings(n_dimensions, embeddings_path)
     return data_frame, indexes
