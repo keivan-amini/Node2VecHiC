@@ -69,12 +69,63 @@ def generate_block_df() -> list:
     expected_block_dfs = [df1, df2]
     return expected_block_dfs
 
+def generate_graph_list():
+    """
+    Manually generate a graph list in order to test the function
+    get_block_graph(), with the input parameter selected_chromosome
+    equals 1, for testing purposes.
+
+    Return
+    ------
+        expected_graphs (list):
+            expected graphs list by considering the parameter
+            selected_chromosome = 1 in the get_block_graph()
+            function.
+    """
+    # First graph
+    nodes1 = [7, 3, 4, 1]
+    edges1 = [(7, 3), (7, 4), (7, 1), (3, 4), (3, 1), (4, 1)]
+    graph1 = nx.Graph()
+    graph1.add_nodes_from(nodes1)
+    graph1.add_edges_from(edges1)
+
+    # Second graph
+    nodes2 = [7, 6, 4, 3]
+    edges2 = [(7, 6), (7, 4), (7, 3), (6, 4), (6, 3), (4, 3)]
+    graph2 = nx.Graph()
+    graph2.add_nodes_from(nodes2)
+    graph2.add_edges_from(edges2)
+
+    expected_graphs = [graph1, graph2]
+    return expected_graphs
+
+
+def generate_main_list():
+    """
+    Manually generate main_list in order to test the function
+    get_complementary_list(). Default dim is random, but less
+    than 10.
+
+    Return
+    ------
+        main_list (list):
+            list with dimension less or equal with respect to
+            reference_list.
+    """
+    dim = np.random.randint(0, 10)
+    main_list = set()
+    while len(main_list) <= dim:
+        main_list.add(np.random.randint(0, 10))
+    return main_list
+
 
 # Defining instance of the classes for testing purposes
 METADATA_PATH = generate_metadata()
 HIC_PATH = generate_hic()
 metadata = Metadata(METADATA_PATH)
 hic = HiC(metadata, HIC_PATH)
+
+
 
 
 ########## TEST FUNCTIONS ##########
@@ -165,20 +216,62 @@ def test_function_get_attributes():
 
 @given(selected_chromosome = st.integers(min_value = 0,
                                          max_value = len(metadata.data_frame)-1))
-def test_block_graph(selected_chromosome):
+def test_len_blocks_graphs(selected_chromosome):
     """
-    GIVEN: a hic instance
+    GIVEN: a hic instance and a selected_chromosome
     WHEN: applying the function get_block_graph()
-    THEN: all the elements in the returned list are nx.Graph
-    structures. 
+    THEN: the output list graphs and the output list
+    data frames share the same number of elements
     """
     graphs_list = hic.get_block_graph(selected_chromosome)
-    for graph in graphs_list:
-        isinstance(graph, nx.Graph)
+    dfs_list = hic.get_block_df(selected_chromosome)
+    assert len(graphs_list) == len(dfs_list)
 
-def test_remove_empty_axis():
+def test_function_get_block_graph():
     """
-    GIVEN: a data frame example
+    GIVEN: a hic instance and an example selected chromosome = 1
+    WHEN: applying the function get_block_graph()
+    THEN: the output list graphs is equal to the expected
+    result.
+    """
+    output_graphs_list = hic.get_block_graph(selected_chromosome = 1)
+    expected_graph_list = generate_graph_list()
+    for output_graph, expected_graph in zip(output_graphs_list, expected_graph_list):
+        nx.is_isomorphic(output_graph, expected_graph)
+
+
+def test_remove_empty_axis_square():
+    """
+    GIVEN: a data frame example without empty axis
+    WHEN: applying the function remove_empty_axis()
+    THEN: the output data frame is equal is the input
+    data frame, i.e., the function did not do anything.
+    """
+    input_df = hic.data_frame
+    output_df = remove_empty_axis(input_df)
+    assert input_df.equals(output_df)
+
+def test_column_remove_empty_axis():
+    """
+    GIVEN: a data frame example with a null column
+    WHEN: applying the function remove_empty_axis()
+    THEN: the output data frame is equal to the expected result.
+    """
+    data = {'A': [0, 2, 3],
+            'B': [0, 1, 2],
+            'C': [0, 5, 6]}
+    data_frame = pd.DataFrame(data)
+    output_data_frame = remove_empty_axis(data_frame)
+    expected_result = {'A': [2, 3],
+                       'B': [1, 2],
+                       'C': [5, 6]}
+    expected_data_frame = pd.DataFrame(expected_result)
+    expected_data_frame.index = [1, 2]
+    assert output_data_frame.equals(expected_data_frame)
+
+def test_row_remove_empty_axis():
+    """
+    GIVEN: a data frame example with a null row
     WHEN: applying the function remove_empty_axis()
     THEN: the output data frame is equal to the expected result.
     """
@@ -191,6 +284,18 @@ def test_remove_empty_axis():
                        'C': [4, 5, 6]}
     expected_data_frame = pd.DataFrame(expected_result)
     assert output_data_frame.equals(expected_data_frame)
+
+def test_n_elements_complementary_list():
+    """
+    GIVEN: a reference list and a random main list example
+    WHEN: applying the function get_complementary_list()
+    THEN: the len of the output list is equal the len of
+    the reference list, minus the len of the main list.
+    """
+    reference_list = list(range(10))
+    main_list = generate_main_list()
+    output_list = get_complementary_list(main_list, reference_list)
+    assert len(output_list) == len(reference_list) - len(main_list)
 
 def test_get_complementary_list():
     """
